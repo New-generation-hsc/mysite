@@ -1,0 +1,82 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block head %} Django Project {% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href='{% static "css/base.css"%}'>
+  </head>
+  {% block head_extra %}{% endblock %}
+  <body>
+      {% include "message_display.html" %}
+
+     <div class="container">
+        {% block content %}{% endblock %}
+     </div>
+     <footer>
+         {% block footer %}{% endblock %}
+     </footer>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script   src="http://code.jquery.com/jquery-1.12.2.min.js"   integrity="sha256-lZFHibXzMHo3GGeehn1hudTAP3Sc0uKXBXAzHX1sjtk="   crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(".content-markdown").each(function(){
+                    var content = $(this).text()
+                    var markedContent = marked(content)
+                    $(this).html(markedContent)
+            })
+            $(".post-detail-item img").each(function(){
+                    $(this).addClass("img-responsive")
+            })
+
+            var contentInput = $("#id_content");
+            function setContent(value){
+                var markedContent = marked(value)
+                $("#preview-content").html(markedContent)
+                $("#preview-content img").each(function(){
+                    $(this).addClass("img-responsive")
+                })
+            }
+
+            contentInput.keyup(function(){
+                var newContent = $(this).val()
+                setContent(newContent)
+            })
+
+            var titleInput = $("#id_title");
+            function setTitle(value){
+                $("#preview-title").text(value)
+            }
+
+            setTitle(titleInput.val())
+
+            titleInput.keyup(function(){
+                var newTitle = $(this).val()
+                setTitle(newTitle)
+            })
+
+            $(".comment-reply-btn").click(function(event){
+                event.preventDefault();
+                $(this).parent().next(".comment-reply").fadeToggle();
+            })
+        })
+    </script>
+  </body>
+</html>

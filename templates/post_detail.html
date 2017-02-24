@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="col-sm-6 col-sm-offset-3 content">
+{% if object.image.url %}
+<img src="{{ object.image.url }}" class="img-responsive">
+{% endif %}
+<h2>{{ object.title }}</h2>
+<p><a href="{{ object.get_absolute_url }}">{{ object.id }}</a></p>
+{{ object.updated }}<br />
+{{ object.timestamp }}<br />
+
+
+<div class="row">
+   <div class="col-sm-12">
+       <div class="post-detail-item">{{ object.get_markdown }}</div>
+       <hr>
+       <p>Aotal words: {{ words_count }} | Read Time: {{read_time}}</p>
+       <hr>
+         
+       <div>
+         	<p class="lead">Comments</p>
+           <form method="post" action="">{% csrf_token %}
+          {{comment_form|crispy}}
+          <input type="hidden" name="parent_id" value="{{ comment.id}}">
+          <input type="submit" class="btn btn-default" value="Post Comment">
+          </form>
+         	{% for comment in comments %}
+          <hr>
+          <blockquote>
+          <p>{{ comment.content }}</p>
+          <footer>via {{comment.user}} | {{comment.timestamp|timesince}} ago |{% if comment.children %}{{ comment.children.count }} Comment{{comment.children|pluralize}}{% endif %} | <a href="#" class="comment-reply-btn">Reply</a> | <a href="{{comment.get_absolute_url}}">Thread</a> {% if comment.user == request.user %}| <a href="{{ comment.get_delete_url }}">Delete</a>{% endif %}</footer>
+          <div class="comment-reply" style="display: none;">
+            {% for children_comment in comment.children %}
+              <blockquote>
+                <p>{{ children_comment.content }}</p>
+                <footer>via {{children_comment.user}} | {{children_comment.timestamp|timesince}} ago | <a href="{{comment.get_absolute_url}}">Thread</a> {% if children_comment.user == request.user or comment.user == request.user %}| <a href="{{ children_comment.get_delete_url }}">Delete</a>{% endif %}</footer>
+              </blockquote>
+              {% endfor %}
+              <form method="post" action="">{% csrf_token %}
+              {{comment_form|crispy}}
+              <input type="hidden" name="parent_id" value="{{ comment.id}}">
+              <input type="submit" class="btn btn-default" value="Post Comment">
+              </form>
+              </blockquote><hr/>
+          </div>
+         	{% endfor %}
+       </div>
+    </div>
+ </div>
+</div>
+{% endblock %}

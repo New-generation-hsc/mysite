@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<div class="col-sm-6 col-sm-offset-3">
+		<blockquote>
+			<p>{{ comment.content }}</p>
+			<footer>via {{ comment.user }} | {{ commnet.timestamp|timesince }} ago |
+			{% if comment.children.count %} {{ comment.children.count }} Comment{{commnet.children|pluralize}}{% endif %}</footer>
+			<hr>
+			<div>
+				{% for child_comment in comment.children %}
+					<blockquote>
+						<p>{{child_comment.content}}</p>
+						<footer>via {{ child_comment.user }} | {{ child_comment.timestamp|timesince }}</footer>
+					</blockquote>
+				{% endfor %}
+				<form method="post" action="">{% csrf_token %}
+				{{ comment_form|crispy }}
+				<input type="hidden" name="parent_id" value="{{ comment.id }}">
+				<input type="submit" class="btn btn-default" value="Reply">
+				</form>
+			</div>
+		</blockquote>
+	</div>
+{% endblock content %}
